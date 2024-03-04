@@ -44,12 +44,12 @@ These registers contain the energy metering data. The modbus registers can be re
 | Current L2            | 322           | 2      | FLOAT  | READ       | Current L2                  | 16.0 A            |
 | Current L3            | 324           | 2      | FLOAT  | READ       | Current L3                  | 16.0 A            |
 | Current sum           | 326           | 2      | FLOAT  | READ       | Sum of all current          | 16.0 A            |
-| Reserved              | 328           | 10     | --     | --         | reserved                    |                   |
+| reserved              | 328           | 10     | --     | --         | reserved                    |                   |
 | Active power L1       | 338           | 2      | FLOAT  | READ       | Active power L1             | 3680.0 W          |
 | Active power L2       | 340           | 2      | FLOAT  | READ       | Active power L2             | 3680.0 W          |
 | Active power L3       | 342           | 2      | FLOAT  | READ       | Active power L3             | 3680.0 W          |
 | Active power sum      | 344           | 2      | FLOAT  | READ       | Sum of all active power     | 11040.0 W         |
-| Reserved              | 346           | 28     | --     | --         | reserved                    |                   |
+| reserved              | 346           | 28     | --     | --         | reserved                    |                   |
 | Energy counter        | 374           | 4      | FLOAT  | READ       | Energy counter              | 12356.0 Wh        |
 
 ## Charger status registers
@@ -65,8 +65,8 @@ These registers contain the current status of the charger. The modbus registers 
 | Setpoint status       | 1214          | 1      | UINT16 | READ       | Setpoint deviation reason   | 1                 |
 | Charging phases       | 1215          | 1      | UINT16 | R/W        | Number of charging phases   | 3                 |
 | reserved              | 1216          | 20     | --     | --         | reserved                    |                   |
-| charge started by     | 1236          | 5      | STRING | READ       | Charge started by           | RFID              |
-| session NFC           | 1241          | 5      | STRING | READ       | NFC UID for current session | 12345678          |
+| Charge started by     | 1236          | 5      | STRING | READ       | Charge started by           | RFID              |
+| Session NFC           | 1241          | 5      | STRING | READ       | NFC UID for current session | 12345678          |
 
 
 
