@@ -137,6 +137,14 @@ class etap_pro:
             return None
         return round(retval, 3)
     
+    def get_current(self, line):
+        if line < 1 or line > 3:
+            return None
+        retval = self.modbus_settings.read(320 + ((line - 1)*2), 2, "float")
+        if retval is None:
+            return None
+        return round(retval, 3)
+    
     def get_board_temperature(self):
         retval = self.modbus_settings.read(1102, 2, "float")
         if retval is None:
@@ -178,7 +186,9 @@ class etap_pro:
         return
     
 if __name__ == "__main__":
-    etap = etap_pro(ip="e-TAP_Pro_a3eab8.local")
+    #etap = etap_pro(ip="e-TAP_Pro_a3eab8.local")
+    etap = etap_pro(ip="e-TAP_Pro_103C6C.local")
+    
     
     device_name = etap.get_name()
     if device_name is None:
@@ -193,6 +203,9 @@ if __name__ == "__main__":
     print("Voltage L1: " + str(etap.get_voltage(1)))
     print("Voltage L2: " + str(etap.get_voltage(2)))
     print("Voltage L3: " + str(etap.get_voltage(3)))
+    print("Current L1: " + str(etap.get_current(1)))
+    print("Current L2: " + str(etap.get_current(2)))
+    print("Current L3: " + str(etap.get_current(3)))
     print("Board temperature: " + str(etap.get_board_temperature()))
     print("EV plug temperature: " + str(etap.get_ev_plug_temperature()))
     print("Grid plug temperature: " + str(etap.get_grid_plug_temperature()))
