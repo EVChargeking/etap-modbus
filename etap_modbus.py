@@ -11,14 +11,16 @@ class modbus_wrapper:
 
     def _read(self, address, count):
         try:
-            result = self.client.read_holding_registers(address, count, unit=1, slave=self.slave_id)
+            result = self.client.read_holding_registers(address=address, count=count, slave=self.slave_id)
+            if result.isError():
+                return None
             return result.registers
         except:
             return None
 
     def _write(self, address, value):
         try:
-            result = self.client.write_registers(address, value, slave=self.slave_id)
+            result = self.client.write_registers(address=address, values=value, slave=self.slave_id)
             return not result.isError()
         except:
             return False
