@@ -6,7 +6,7 @@ from pymodbus.client import ModbusTcpClient
 
 class modbus_wrapper:
     def __init__(self, ip, port=502, slave_id=1):
-        self.client = ModbusTcpClient(ip, port)
+        self.client = ModbusTcpClient(host=ip, port=port)
         self.slave_id = int(slave_id)
 
     def _read(self, address, count):
@@ -172,6 +172,9 @@ class etap_pro:
     def get_mode(self):
         return self.modbus_settings.read(1201, 5, "string")
     
+    def get_mode_int(self):
+        return self.modbus_settings.read(1208, 1, "int16")
+    
     def get_current_setpoint(self):
         retval = self.modbus_settings.read(1210, 2, "float")
         if retval is None:
@@ -187,7 +190,7 @@ class etap_pro:
     
 if __name__ == "__main__":
     #etap = etap_pro(ip="e-TAP_Pro_a3eab8.local")
-    etap = etap_pro(ip="e-TAP_Pro_103C6C.local")
+    etap = etap_pro(ip="192.168.88.39")
     
     
     device_name = etap.get_name()
@@ -196,22 +199,25 @@ if __name__ == "__main__":
         exit()
     
     print("Found device: " + device_name)
-    print("Manufacturer: " + etap.get_manufacturer())
-    print("Modbus version: " + str(etap.get_modbus_version()))
+    # print("Manufacturer: " + etap.get_manufacturer())
+    # print("Modbus version: " + str(etap.get_modbus_version()))
     print("Serial number: " + etap.get_serial_number())
-    print("Time: " + str(etap.get_time()))
+    # print("Time: " + str(etap.get_time()))
     print("Voltage L1: " + str(etap.get_voltage(1)))
     print("Voltage L2: " + str(etap.get_voltage(2)))
     print("Voltage L3: " + str(etap.get_voltage(3)))
-    print("Current L1: " + str(etap.get_current(1)))
-    print("Current L2: " + str(etap.get_current(2)))
-    print("Current L3: " + str(etap.get_current(3)))
-    print("Board temperature: " + str(etap.get_board_temperature()))
-    print("EV plug temperature: " + str(etap.get_ev_plug_temperature()))
-    print("Grid plug temperature: " + str(etap.get_grid_plug_temperature()))
+    # print("Current L1: " + str(etap.get_current(1)))
+    # print("Current L2: " + str(etap.get_current(2)))
+    # print("Current L3: " + str(etap.get_current(3)))
+    # print("Board temperature: " + str(etap.get_board_temperature()))
+    # print("EV plug temperature: " + str(etap.get_ev_plug_temperature()))
+    # print("Grid plug temperature: " + str(etap.get_grid_plug_temperature()))
     print("Charger max. current: " + str(etap.get_max_current()))
     print("Charger mode: " + etap.get_mode())
+    print("Charger mode int: " + str(etap.get_mode_int()))
     print("Setting current setpoint to 10A :" + str(etap.set_current_setpoint(10)))
     time.sleep(1)
-    print("Current setpoint: " + str(etap.get_current_setpoint()))
+    print("Charger max. current: " + str(etap.get_max_current()))
+    #time.sleep(1)
+    #print("Current setpoint: " + str(etap.get_current_setpoint()))
     etap.close()
