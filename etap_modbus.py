@@ -60,7 +60,7 @@ class modbus_wrapper:
         elif data_type == "STRING":
             res = [x.to_bytes(2, byteorder='little') for x in res]
             try:
-                return b''.join(res).decode('utf-8')
+                return b''.join(res).decode('utf-8').rstrip('\x00')
             except:
                 return None
         
@@ -196,6 +196,9 @@ if __name__ == "__main__":
     
     
     device_name = etap.get_name()
+    #print device name as bytes
+    print(device_name)
+
     if device_name is None:
         print("Device not found")
         exit()
