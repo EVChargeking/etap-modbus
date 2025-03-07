@@ -45,20 +45,20 @@ class modbus_wrapper:
         elif data_type == "UINT32":
             if len(res) != 2:
                 return None
-            return struct.unpack('>I', struct.pack('>HH', res[1], res[0]))[0]
+            return struct.unpack('>I', struct.pack('>HH', res[0], res[1]))[0]
         
         elif data_type == "UINT64":
             if len(res) != 4:
                 return None
-            return struct.unpack('>Q', struct.pack('>HHHH', res[3], res[2], res[1], res[0]))[0]
+            return struct.unpack('>Q', struct.pack('>HHHH', res[0], res[1], res[2], res[3]))[0]
         
         elif data_type == "FLOAT":
             if len(res) != 2:
                 return None
-            return struct.unpack('>f', struct.pack('>HH', res[1], res[0]))[0]
+            return struct.unpack('>f', struct.pack('>HH', res[0], res[1]))[0]
         
         elif data_type == "STRING":
-            res = [x.to_bytes(2, byteorder='little') for x in res]
+            res = [x.to_bytes(2, byteorder='big') for x in res]
             try:
                 return b''.join(res).decode('utf-8').rstrip('\x00')
             except:
@@ -120,6 +120,9 @@ class etap_pro:
     def get_modbus_version(self):
         return self.modbus_settings.read(122, 1, "int16")
     
+    def get_firmware_version(self):
+        return self.modbus_settings.read(123, 17, "string")
+
     def get_serial_number(self):
         return self.modbus_settings.read(157, 11, "string")
     
@@ -130,6 +133,18 @@ class etap_pro:
         if None in time:
             return None
         return datetime.datetime(time[0], time[1], time[2], time[3], time[4], time[5])
+    
+    def get_uptime(self):
+        retval = self.modbus_settings.read(174, 4, "uint64")
+        if retval is None:
+            return None
+        return retval
+    
+    def get_timezone(self):
+        retval =  self.modbus_settings.read(178, 1, "int16")
+        if retval is None:
+            return None
+        return retval
     
     def get_voltage(self, line):
         if line < 1 or line > 3:
@@ -146,37 +161,84 @@ class etap_pro:
         if retval is None:
             return None
         return round(retval, 3)
+
+    def get_current_sum(self):
+        retval = self.modbus_settings.read(326, 2, "float")
+        if retval is None:
+            return None
+        return round(retval, 3)
+
+    def get_power(self, line):
+        if line < 1 or line > 3:
+            return None
+        retval = self.modbus_settings.read(338 + ((line - 1)*2), 2, "float")
+        if retval is None:
+            return None
+        return round(retval, 3)
     
+    def get_power_sum(self):
+        retval = self.modbus_settings.read(344, 2, "float")
+        if retval is None:
+            return None
+        return round(retval, 3)
+
+    def get_energy(self):
+        retval = self.modbus_settings.read(374, 2, "float")
+        if retval is None:
+            return None
+        return round(retval, 3)
+
+    def get_station_max_current(self):
+        retval = self.modbus_settings.read(1100, 2, "float")
+        if retval is None:
+            return None
+        return round(retval, 3)
+
     def get_board_temperature(self):
         retval = self.modbus_settings.read(1102, 2, "float")
         if retval is None:
             return None
         return round(retval, 3)
     
+    def get_number_of_sockets(self):
+        retval = self.modbus_settings.read(1105, 1, "uint16")
+        if retval is None:
+            return None
+        return retval
+
     def get_ev_plug_temperature(self):
         retval =  self.modbus_settings.read(1106, 2, "float")
         if retval is None:
             return None
         return round(retval, 3)
-    
+
     def get_grid_plug_temperature(self):
         retval = self.modbus_settings.read(1108, 2, "float")
         if retval is None:
             return None
         return round(retval, 3)
+
+    def get_availablity(self):
+        retval = self.modbus_settings.read(1200, 1, "int16")
+        if retval is None:
+            return None
+        return retval
+    
+    def get_mode(self):
+        return self.modbus_settings.read(1201, 5, "string")
     
     def get_max_current(self):
         retval = self.modbus_settings.read(1206, 2, "float")
         if retval is None:
             return None
         return round(retval, 3)
-    
-    def get_mode(self):
-        return self.modbus_settings.read(1201, 5, "string")
-    
-    def get_mode_int(self):
-        return self.modbus_settings.read(1208, 1, "int16")
-    
+
+    def get_time_to_safe_current(self):
+        retval = self.modbus_settings.read(1208, 2, "uint32")
+        if retval is None:
+            return None
+        return retval    
+
     def get_current_setpoint(self):
         retval = self.modbus_settings.read(1210, 2, "float")
         if retval is None:
@@ -185,14 +247,49 @@ class etap_pro:
     
     def set_current_setpoint(self, current):
         return self.modbus_settings.write(1210, current, "float")
+
+    def get_safe_current(self):
+        retval = self.modbus_settings.read(1212, 2, "float")
+        if retval is None:
+            return None
+        return round(retval, 3)
     
+    def get_setpoint_status(self):
+        retval = self.modbus_settings.read(1214, 1, "uint16")
+        if retval is None:
+            return None
+        return retval
+    
+    def get_charging_phases(self):
+        retval = self.modbus_settings.read(1215, 1, "uint16")
+        if retval is None:
+            return None
+        return retval
+    
+    def set_charging_phases(self, phases):
+        if phases != 1 and phases != 3:
+            return False
+        return self.modbus_settings.write(1215, phases, "uint16")
+    
+    def get_charging_started_by(self):
+        return self.modbus_settings.read(1236, 5, "string")
+    
+    def get_session_nfc(self):
+        return self.modbus_settings.read(1241, 5, "string")
+    
+    def get_mode_int(self):
+        retval = self.modbus_settings.read(1246, 1, "uint16")
+        if retval is None:
+            return None
+        return retval
+
     def close(self):
         self.modbus_settings.close()
         return
     
 if __name__ == "__main__":
-    #etap = etap_pro(ip="e-TAP_Pro_a3eab8.local")
-    etap = etap_pro(ip="192.168.88.39")
+    # etap = etap_pro(ip="e-TAP_Pro_CD6AD8.local")
+    etap = etap_pro(ip="192.168.0.162")
     
     
     device_name = etap.get_name()
@@ -220,9 +317,48 @@ if __name__ == "__main__":
     print("Charger max. current: " + str(etap.get_max_current()))
     print("Charger mode: " + etap.get_mode())
     print("Charger mode int: " + str(etap.get_mode_int()))
-    print("Setting current setpoint to 10A :" + str(etap.set_current_setpoint(10)))
+    # print("Setting current setpoint to 10A :" + str(etap.set_current_setpoint(10)))
     time.sleep(1)
     print("Charger max. current: " + str(etap.get_max_current()))
     #time.sleep(1)
-    #print("Current setpoint: " + str(etap.get_current_setpoint()))
+    print("Current setpoint: " + str(etap.get_current_setpoint()))
+    
+    print("-----------------")
+
+    print("Device Name: " + str(etap.get_name()).ljust(20))
+    print("Manufacturer: " + str(etap.get_manufacturer()).ljust(20))
+    print("Modbus version: " + str(etap.get_modbus_version()).ljust(20))
+    print("Firmware Version: " + str(etap.get_firmware_version()).ljust(20))
+    print("Serial Number: " + str(etap.get_serial_number()).ljust(20))
+    print("Time: " + str(etap.get_time()).ljust(20))
+    print("Uptime: " + str(etap.get_uptime()).ljust(20))
+    print("Timezone: " + str(etap.get_timezone()).ljust(20))
+    print("Voltage L1: " + str(etap.get_voltage(1)).ljust(20))
+    print("Voltage L2: " + str(etap.get_voltage(2)).ljust(20))
+    print("Voltage L3: " + str(etap.get_voltage(3)).ljust(20))
+    print("Current L1: " + str(etap.get_current(1)).ljust(20))
+    print("Current L2: " + str(etap.get_current(2)).ljust(20))
+    print("Current L3: " + str(etap.get_current(3)).ljust(20))
+    print("Current Sum: " + str(etap.get_current_sum()).ljust(20))
+    print("Power L1: " + str(etap.get_power(1)).ljust(20))
+    print("Power L2: " + str(etap.get_power(2)).ljust(20))
+    print("Power L3: " + str(etap.get_power(3)).ljust(20))
+    print("Power Sum: " + str(etap.get_power_sum()).ljust(20))
+    print("Energy: " + str(etap.get_energy()).ljust(20))
+    print("Station Max Current: " + str(etap.get_station_max_current()).ljust(20))
+    print("Board Temperature: " + str(etap.get_board_temperature()).ljust(20))
+    print("Number of Sockets: " + str(etap.get_number_of_sockets()).ljust(20))
+    print("EV Plug Temperature: " + str(etap.get_ev_plug_temperature()).ljust(20))
+    print("Grid Plug Temperature: " + str(etap.get_grid_plug_temperature()).ljust(20))
+    print("Availability: " + str(etap.get_availablity()).ljust(20))
+    print("Mode: " + str(etap.get_mode()).ljust(20))
+    print("Max Current: " + str(etap.get_max_current()).ljust(20))
+    print("Time to Safe Current: " + str(etap.get_time_to_safe_current()).ljust(20))
+    print("Current Setpoint: " + str(etap.get_current_setpoint()).ljust(20))
+    print("Safe Current: " + str(etap.get_safe_current()).ljust(20))
+    print("Setpoint Status: " + str(etap.get_setpoint_status()).ljust(20))
+    print("Charging Phases: " + str(etap.get_charging_phases()).ljust(20))
+    print("Charging Started By: " + str(etap.get_charging_started_by()).ljust(20))
+    print("Session NFC: " + str(etap.get_session_nfc()).ljust(20))
+    print("Mode internal: " + str(etap.get_mode_int()).ljust(20))
     etap.close()
