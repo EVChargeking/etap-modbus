@@ -6,8 +6,8 @@ These registers are used to read statusses and apply overal settings to the char
 |-----------------------|---------------|--------|--------|------------|-----------------------------|-------------------|-------------------------|
 | Name                  | 100           | 17     | STRING | READ       | Name of the device          | ETAP_34f928       | 0.1.0                   |
 | Manufacturer          | 117           | 5      | STRING | READ       | Manufacturer of the device  | Some BV           | 0.1.0                   |
-| Modbus table version  | 122           | 1      | INT16  | READ       | Modbus table version        | 1                 | 0.1.x                   |
-| Firmware version      | 123           | 17     | STRING | READ       | Firmware version            | 1.0.0             | 0.1.x                   |
+| Modbus table version  | 122           | 1      | INT16  | READ       | Modbus table version        | 3                 | 0.1.54                  |
+| Firmware version      | 123           | 17     | STRING | READ       | Firmware version            | 0.1.54            | 0.1.54                  |
 | reserved              | 140           | 17     | --     | --         | reserved                    |                   |                         |
 | Serial number         | 157           | 11     | STRING | READ       | Serial number               | ETPRO11010000008  | 0.1.0                   |
 | Datetime year         | 168           | 1      | INT16  | READ       | Datetime year               | 2024              | 0.1.0                   |
@@ -37,17 +37,17 @@ These registers contain the energy metering data. The modbus registers can be re
 | Voltage L2-N          | 308           | 2      | FLOAT  | READ       | Voltage L2-N                | 230.0 V           | 0.1.0                   |
 | Voltage L3-N          | 310           | 2      | FLOAT  | READ       | Voltage L3-N                | 230.0 V           | 0.1.0                   |
 | reserved              | 312           | 8      | --     | --         | reserved                    |                   |                         |
-| Current L1            | 320           | 2      | FLOAT  | READ       | Current L1                  | 16.0 A            | 0.1.x                   |
-| Current L2            | 322           | 2      | FLOAT  | READ       | Current L2                  | 16.0 A            | 0.1.x                   |
-| Current L3            | 324           | 2      | FLOAT  | READ       | Current L3                  | 16.0 A            | 0.1.x                   |
-| Current sum           | 326           | 2      | FLOAT  | READ       | Sum of all current          | 16.0 A            | 0.1.x                   |
+| Current L1            | 320           | 2      | FLOAT  | READ       | Current L1                  | 16.0 A            | 0.1.54                  |
+| Current L2            | 322           | 2      | FLOAT  | READ       | Current L2                  | 16.0 A            | 0.1.54                  |
+| Current L3            | 324           | 2      | FLOAT  | READ       | Current L3                  | 16.0 A            | 0.1.54                  |
+| Current sum           | 326           | 2      | FLOAT  | READ       | Sum of all current          | 16.0 A            | 0.1.54                  |
 | reserved              | 328           | 10     | --     | --         | reserved                    |                   |                         |
-| Active power L1       | 338           | 2      | FLOAT  | READ       | Active power L1             | 3680.0 W          | 0.1.x                   |
-| Active power L2       | 340           | 2      | FLOAT  | READ       | Active power L2             | 3680.0 W          | 0.1.x                   |
-| Active power L3       | 342           | 2      | FLOAT  | READ       | Active power L3             | 3680.0 W          | 0.1.x                   |
-| Active power sum      | 344           | 2      | FLOAT  | READ       | Sum of all active power     | 11040.0 W         | 0.1.x                   |
+| Active power L1       | 338           | 2      | FLOAT  | READ       | Active power L1             | 3680.0 W          | 0.1.54                  |
+| Active power L2       | 340           | 2      | FLOAT  | READ       | Active power L2             | 3680.0 W          | 0.1.54                  |
+| Active power L3       | 342           | 2      | FLOAT  | READ       | Active power L3             | 3680.0 W          | 0.1.54                  |
+| Active power sum      | 344           | 2      | FLOAT  | READ       | Sum of all active power     | 11040.0 W         | 0.1.54                  |
 | reserved              | 346           | 28     | --     | --         | reserved                    |                   |                         |
-| Energy counter        | 374           | 4      | FLOAT  | READ       | Energy counter              | 12356.0 Wh        |                         |
+| Energy counter        | 374           | 4      | FLOAT  | READ       | Energy counter              | 12356.0 Wh        | 0.1.x                   |
 
 ## Charger status registers
 These registers contain the current status of the charger. The modbus registers can be read at slave address 1.
@@ -61,12 +61,14 @@ These registers contain the current status of the charger. The modbus registers 
 | reserved              | 1110          | 20     | --     | --         | reserved                    |                   |                         |
 | Availability          | 1200          | 1      | INT16  | READ       | Charger availability        | 1                 | 0.1.0                   |
 | Mode                  | 1201          | 5      | STRING | READ       | Charger mode (status)       | C2                | 0.1.0                   |
-| Applied max. current  | 1206          | 2      | STRING | FLOAT      | Applied setpoint            | 14.6 A            | 0.1.x                   |
+| Applied max. current  | 1206          | 2      | STRING | FLOAT      | Applied setpoint            | 14.6 A            | 0.1.54                  |
 | reserved              | 1208          | 2      | --     | --         | reserved                    |                   |                         |
 | Current setpoint      | 1210          | 2      | FLOAT  | R/W        | Current setpoint            | 15.0 A            | 0.1.0                   |
 | reserved              | 1212          | 2      | --     | --         | reserved                    |                   |                         |
-| Setpoint status       | 1214          | 1      | UINT16 | READ       | Setpoint deviation reason   | 1                 | 0.1.x                   |
-| Charging phases       | 1215          | 1      | UINT16 | R/W        | Number of charging phases   | 3                 | 0.1.x                   |
+| Setpoint status       | 1214          | 1      | UINT16 | READ       | Setpoint 1210 accounted for | 1                 | 0.1.54                  |
+| Charging phases       | 1215          | 1      | UINT16 | R/W        | Number of charging phases   | 3                 | 0.1.54                  |
 | reserved              | 1216          | 20     | --     | --         | reserved                    |                   |                         |
 | Charge started by     | 1236          | 5      | STRING | READ       | Charge started by           | RFID              | 0.1.x                   |
-| Session NFC           | 1241          | 5      | STRING | READ       | NFC UID for current session | 12345678          | 0.1.x                   |
+| Session NFC           | 1241          | 5      | STRING | READ       | NFC UID for current session | 12345678          | 0.1.54                  |
+| reserved              | 1246          | 1      | --     | ---        | reserved                    |                   |                         |
+| GPS location          | 1247          | 17     | STRING | READ       | LON+LAT from NEMA GGA lock  |                   | 0.1.x                   |
