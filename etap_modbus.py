@@ -80,19 +80,19 @@ class modbus_wrapper:
             if value < 0 or value > 4294967295 or type(value) is not int:
                 raise ValueError("Cannot write {0} as UINT32".format(value))
             data_to_write = list(struct.unpack('>HH', struct.pack('>I', value)))
-            data_to_write.reverse()
+            # data_to_write.reverse()
         elif data_type == "UINT64":
             if type(value) is not int:
                 raise ValueError("Cannot write {0} as UINT64".format(value))
             data_to_write = list(struct.unpack('>HHHH', struct.pack('>Q', value)))
-            data_to_write.reverse()
+            # data_to_write.reverse()
         elif data_type == "FLOAT":
             try:
                 float(value)
             except:
                 raise ValueError("Cannot write {0} as FLOAT".format(value))
             data_to_write = list(struct.unpack('>HH', struct.pack('>f', value)))
-            data_to_write.reverse()
+            # data_to_write.reverse()
         elif data_type == "STRING":
             raise ValueError("Cannot write string data")
         else:
